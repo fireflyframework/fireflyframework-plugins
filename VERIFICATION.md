@@ -186,7 +186,7 @@ mvn clean install
 | Testability | ✅ | 100% test coverage |
 | Performance | ✅ | O(V+E) dependency resolution |
 | Security | ✅ | No external JAR loading |
-| Portability | ✅ | Pure Java 21, no framework lock-in |
+| Portability | ✅ | Pure Java 25 (Java 21+ compatible), no framework lock-in |
 
 ---
 

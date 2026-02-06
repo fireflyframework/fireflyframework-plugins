@@ -36,7 +36,7 @@ Everything else (reactive programming, Git loading, debugging tools, health moni
 - Many Firefly services might not use Spring or might use different versions
 - Easier to test without framework dependencies
 
-**Impact**: Plugin system can be used in any Java 21+ application.
+**Impact**: Plugin system can be used in any Java 21+ application (default Java 25).
 
 ### 3. Single Loading Mechanism
 
