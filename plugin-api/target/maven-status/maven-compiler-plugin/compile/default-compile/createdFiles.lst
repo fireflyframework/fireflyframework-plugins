@@ -1,0 +1,12 @@
+org/fireflyframework/plugin/annotation/ExtensionPoint.class
+org/fireflyframework/plugin/model/PluginState.class
+org/fireflyframework/plugin/model/PluginMetadata$Builder.class
+org/fireflyframework/plugin/annotation/Extension.class
+org/fireflyframework/plugin/model/PluginMetadata.class
+org/fireflyframework/plugin/api/PluginException.class
+org/fireflyframework/plugin/api/ExtensionRegistry.class
+org/fireflyframework/plugin/api/PluginManager.class
+org/fireflyframework/plugin/annotation/Plugin.class
+org/fireflyframework/plugin/api/Plugin.class
+org/fireflyframework/plugin/model/PluginDescriptor$Builder.class
+org/fireflyframework/plugin/model/PluginDescriptor.class

@@ -1,0 +1,10 @@
+/Users/ancongui/Development/fireflyframework/fireflyframework-plugins/plugin-api/src/main/java/org/fireflyframework/plugin/model/PluginDescriptor.java
+/Users/ancongui/Development/fireflyframework/fireflyframework-plugins/plugin-api/src/main/java/org/fireflyframework/plugin/annotation/Extension.java
+/Users/ancongui/Development/fireflyframework/fireflyframework-plugins/plugin-api/src/main/java/org/fireflyframework/plugin/annotation/Plugin.java
+/Users/ancongui/Development/fireflyframework/fireflyframework-plugins/plugin-api/src/main/java/org/fireflyframework/plugin/annotation/ExtensionPoint.java
+/Users/ancongui/Development/fireflyframework/fireflyframework-plugins/plugin-api/src/main/java/org/fireflyframework/plugin/model/PluginMetadata.java
+/Users/ancongui/Development/fireflyframework/fireflyframework-plugins/plugin-api/src/main/java/org/fireflyframework/plugin/api/PluginException.java
+/Users/ancongui/Development/fireflyframework/fireflyframework-plugins/plugin-api/src/main/java/org/fireflyframework/plugin/api/ExtensionRegistry.java
+/Users/ancongui/Development/fireflyframework/fireflyframework-plugins/plugin-api/src/main/java/org/fireflyframework/plugin/api/PluginManager.java
+/Users/ancongui/Development/fireflyframework/fireflyframework-plugins/plugin-api/src/main/java/org/fireflyframework/plugin/model/PluginState.java
+/Users/ancongui/Development/fireflyframework/fireflyframework-plugins/plugin-api/src/main/java/org/fireflyframework/plugin/api/Plugin.java
