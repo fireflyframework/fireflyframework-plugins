@@ -7,12 +7,12 @@
     <parent>
         <groupId>org.fireflyframework</groupId>
         <artifactId>fireflyframework-parent</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>26.01.01</version>
     </parent>
 
     <groupId>org.fireflyframework</groupId>
     <artifactId>fireflyframework-plugins</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>26.01.01</version>
     <packaging>pom</packaging>
 
     <name>Firefly Framework - Common Plugins</name>
