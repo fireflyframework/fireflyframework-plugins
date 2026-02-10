@@ -1,5 +1,7 @@
 # Firefly Common Plugins
 
+[![CI](https://github.com/fireflyframework/fireflyframework-plugins/actions/workflows/ci.yml/badge.svg)](https://github.com/fireflyframework/fireflyframework-plugins/actions/workflows/ci.yml)
+
 A simplified, well-designed plugin system for the Firefly Platform. This library provides a clean and maintainable alternative to the deprecated `lib-plugin-manager`.
 
 ## Overview
