@@ -1,312 +1,111 @@
-# Firefly Common Plugins
+# Firefly Framework - Plugins
 
 [![CI](https://github.com/fireflyframework/fireflyframework-plugins/actions/workflows/ci.yml/badge.svg)](https://github.com/fireflyframework/fireflyframework-plugins/actions/workflows/ci.yml)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![Java](https://img.shields.io/badge/Java-21%2B-orange.svg)](https://openjdk.org)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.x-green.svg)](https://spring.io/projects/spring-boot)
 
-A simplified, well-designed plugin system for the Firefly Platform. This library provides a clean and maintainable alternative to the deprecated `lib-plugin-manager`.
+> Plugin system providing extension point discovery, lifecycle management, and dependency resolution for Firefly Platform modules.
+
+---
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Features](#features)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [Configuration](#configuration)
+- [Documentation](#documentation)
+- [Contributing](#contributing)
+- [License](#license)
 
 ## Overview
 
-The Firefly Common Plugins library enables modular extension of the Firefly Platform through a flexible plugin architecture. It allows you to:
+Firefly Framework Plugins provides a simplified plugin architecture for extending the Firefly Platform. It defines a plugin API with annotations for declaring plugins and extension points, along with a core implementation for plugin lifecycle management, extension registry, and dependency resolution.
 
-- **Load plugins dynamically** at runtime
-- **Define extension points** that plugins can implement
-- **Manage plugin lifecycles** (load, initialize, start, stop, destroy)
-- **Handle dependencies** between plugins automatically
-- **Register and discover extensions** through a simple registry
+The project is structured as a multi-module build with two sub-modules: plugin-api (annotations, interfaces, and models) and plugin-core (default implementations). The `@Plugin` and `@Extension` annotations enable declarative plugin definitions, while `@ExtensionPoint` marks interfaces that plugins can implement.
 
-## Why This Design?
+The `DefaultPluginManager` handles plugin discovery, initialization, and shutdown, while `DefaultExtensionRegistry` manages extension point bindings. The `PluginDependencyResolver` ensures plugins are loaded in the correct order based on their declared dependencies.
 
-### Problems with the Deprecated Version
+## Features
 
-The deprecated `lib-plugin-manager` suffered from several design issues:
+- `@Plugin` annotation for declarative plugin definition
+- `@Extension` annotation for marking extension implementations
+- `@ExtensionPoint` annotation for declaring extensible interfaces
+- `PluginManager` interface with default implementation
+- `ExtensionRegistry` for managing extension point bindings
+- `PluginDependencyResolver` for dependency-ordered plugin loading
+- `PluginDescriptor` and `PluginMetadata` for plugin information
+- Plugin state lifecycle management (created, initialized, started, stopped)
+- Multi-module architecture: plugin-api, plugin-core
 
-1. **Over-engineering**: Reactive programming (Reactor) was used everywhere, adding unnecessary complexity for a plugin system
-2. **Too many features**: Git loading, hot deployment, debugging, health monitoring - features that added complexity without clear value
-3. **Tight coupling**: Heavy dependence on Spring WebFlux and specific Spring patterns
-4. **Complex abstractions**: Multiple loaders, event buses, security managers made the code hard to understand and maintain
-5. **Unclear separation**: Mixed concerns between plugin management and runtime features
+## Requirements
 
-### Our Simplified Approach
+- Java 21+
+- Spring Boot 3.x
+- Maven 3.9+
 
-This new implementation focuses on:
+## Installation
 
-1. **Simplicity**: Plain Java interfaces, no reactive patterns unless actually needed
-2. **Core functionality only**: Plugin lifecycle, extension points, dependency resolution
-3. **Framework independence**: No tight coupling to Spring or any other framework
-4. **Clean separation of concerns**: Clear boundaries between API, implementation, and client code
-5. **Easy to understand**: Straightforward code that developers can read and modify
+```xml
+<!-- Plugin API (for plugin developers) -->
+<dependency>
+    <groupId>org.fireflyframework</groupId>
+    <artifactId>plugin-api</artifactId>
+    <version>26.01.01</version>
+</dependency>
 
-## Architecture
-
-```
-fireflyframework-plugins/
-├── plugin-api/           # Core interfaces, annotations, and models
-│   ├── api/             # Plugin, PluginManager, ExtensionRegistry
-│   ├── annotation/      # @Plugin, @Extension, @ExtensionPoint
-│   └── model/           # PluginMetadata, PluginDescriptor, PluginState
-└── plugin-core/         # Default implementations
-    └── core/            # DefaultPluginManager, DefaultExtensionRegistry, etc.
+<!-- Plugin Core (for host applications) -->
+<dependency>
+    <groupId>org.fireflyframework</groupId>
+    <artifactId>plugin-core</artifactId>
+    <version>26.01.01</version>
+</dependency>
 ```
 
 ## Quick Start
 
-### 1. Add Dependency
-
-```xml
-<dependency>
-    <groupId>org.fireflyframework</groupId>
-    <artifactId>plugin-core</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
-</dependency>
-```
-
-### 2. Define an Extension Point
-
 ```java
-@ExtensionPoint(
-    id = "org.fireflyframework.banking.payment-processor",
-    description = "Processes payments for financial transactions"
-)
+import org.fireflyframework.plugin.annotation.Plugin;
+import org.fireflyframework.plugin.annotation.Extension;
+import org.fireflyframework.plugin.annotation.ExtensionPoint;
+
+// Define an extension point
+@ExtensionPoint
 public interface PaymentProcessor {
-    boolean supportsMethod(String paymentMethod);
-    String processPayment(BigDecimal amount, String currency);
+    Mono<PaymentResult> process(PaymentRequest request);
 }
-```
 
-### 3. Create a Plugin
+// Implement a plugin
+@Plugin(id = "stripe-payments", version = "1.0.0")
+public class StripePlugin implements org.fireflyframework.plugin.api.Plugin {
 
-```java
-@Plugin(
-    id = "com.example.credit-card-plugin",
-    name = "Credit Card Payment Plugin",
-    version = "1.0.0",
-    description = "Processes credit card payments",
-    author = "Example Inc."
-)
-public class CreditCardPlugin implements Plugin {
-    
-    private final PluginMetadata metadata;
-    
-    public CreditCardPlugin() {
-        this.metadata = PluginMetadata.builder()
-            .id("com.example.credit-card-plugin")
-            .name("Credit Card Payment Plugin")
-            .version("1.0.0")
-            .description("Processes credit card payments")
-            .author("Example Inc.")
-            .build();
-    }
-    
-    @Override
-    public PluginMetadata getMetadata() {
-        return metadata;
-    }
-    
-    @Override
-    public void initialize() throws PluginException {
-        // Initialize resources
-    }
-    
-    @Override
-    public void start() throws PluginException {
-        // Start processing
-    }
-    
-    @Override
-    public void stop() throws PluginException {
-        // Stop processing
-    }
-    
-    @Override
-    public void destroy() throws PluginException {
-        // Clean up resources
-    }
-    
-    // Extension implementation as inner class
-    @Extension(
-        extensionPointId = "org.fireflyframework.banking.payment-processor",
-        priority = 100
-    )
-    public static class CreditCardProcessor implements PaymentProcessor {
-        
+    @Extension
+    public class StripePaymentProcessor implements PaymentProcessor {
         @Override
-        public boolean supportsMethod(String paymentMethod) {
-            return "CREDIT_CARD".equals(paymentMethod);
-        }
-        
-        @Override
-        public String processPayment(BigDecimal amount, String currency) {
-            // Process payment
-            return "TXN-" + UUID.randomUUID();
+        public Mono<PaymentResult> process(PaymentRequest request) {
+            return stripeApi.charge(request);
         }
     }
 }
 ```
 
-### 4. Use the Plugin Manager
+## Configuration
 
-```java
-public class Application {
-    public static void main(String[] args) throws PluginException {
-        // Create and initialize plugin manager
-        PluginManager pluginManager = new DefaultPluginManager();
-        pluginManager.initialize();
-        
-        // Register extension point
-        pluginManager.getExtensionRegistry()
-            .registerExtensionPoint(
-                "org.fireflyframework.banking.payment-processor", 
-                PaymentProcessor.class
-            );
-        
-        // Load and start plugin
-        pluginManager.loadPlugin(CreditCardPlugin.class);
-        pluginManager.startPlugin("com.example.credit-card-plugin");
-        
-        // Use extensions
-        List<PaymentProcessor> processors = pluginManager
-            .getExtensionRegistry()
-            .getExtensions("org.fireflyframework.banking.payment-processor");
-        
-        for (PaymentProcessor processor : processors) {
-            if (processor.supportsMethod("CREDIT_CARD")) {
-                String txnId = processor.processPayment(
-                    new BigDecimal("100.00"), "USD"
-                );
-                System.out.println("Transaction ID: " + txnId);
-            }
-        }
-        
-        // Shutdown
-        pluginManager.shutdown();
-    }
-}
-```
+No configuration is required. Plugins are discovered and loaded automatically by the `PluginManager`.
 
-## Plugin Dependencies
+## Documentation
 
-Plugins can depend on other plugins:
+No additional documentation available for this project.
 
-```java
-@Plugin(
-    id = "com.example.advanced-plugin",
-    name = "Advanced Plugin",
-    version = "1.0.0",
-    dependencies = {"com.example.base-plugin"} // This plugin must load first
-)
-public class AdvancedPlugin implements Plugin {
-    // ...
-}
-```
+## Contributing
 
-The plugin manager automatically:
-- Validates all dependencies exist
-- Detects circular dependencies
-- Starts plugins in the correct order (dependencies first)
-
-## API Reference
-
-### Core Interfaces
-
-#### Plugin
-The main interface all plugins must implement.
-- `getMetadata()` - Returns plugin metadata
-- `initialize()` - Called once when plugin is loaded
-- `start()` - Called when plugin should begin work
-- `stop()` - Called when plugin should cease work
-- `destroy()` - Called when plugin is unloaded
-
-#### PluginManager
-Manages plugin lifecycle.
-- `loadPlugin(Class)` - Loads a plugin class
-- `startPlugin(String)` - Starts a plugin by ID
-- `stopPlugin(String)` - Stops a plugin by ID
-- `unloadPlugin(String)` - Unloads and destroys a plugin
-- `getExtensionRegistry()` - Access to extension registry
-
-#### ExtensionRegistry
-Manages extension points and extensions.
-- `registerExtensionPoint(String, Class)` - Register an extension point
-- `registerExtension(String, Object, int)` - Register an extension with priority
-- `getExtensions(String)` - Get all extensions for a point (ordered by priority)
-- `getExtension(String)` - Get highest priority extension
-
-### Annotations
-
-#### @Plugin
-Marks a class as a plugin.
-- `id` - Unique plugin identifier (required)
-- `name` - Human-readable name (required)
-- `version` - Version string (required)
-- `description` - Plugin description
-- `author` - Plugin author/organization
-- `dependencies` - Array of plugin IDs this depends on
-
-#### @ExtensionPoint
-Marks an interface as an extension point.
-- `id` - Unique extension point identifier (required)
-- `description` - Extension point description
-
-#### @Extension
-Marks a class as implementing an extension point.
-- `extensionPointId` - The extension point ID (required)
-- `priority` - Priority (higher = higher priority, default 0)
-- `description` - Extension description
-
-## Migration from Deprecated Version
-
-If you're migrating from `deprecated-lib-plugin-manager`:
-
-### Key Changes
-
-1. **No Reactive Types**: All methods return plain types (no `Mono<>` or `Flux<>`)
-   ```java
-   // Old:
-   Mono<PluginDescriptor> descriptor = pluginManager.installPlugin(path);
-   
-   // New:
-   PluginDescriptor descriptor = pluginManager.loadPlugin(MyPlugin.class);
-   ```
-
-2. **Simpler Lifecycle**: Just implement 4 methods instead of complex reactive chains
-   ```java
-   // Old:
-   public Mono<Void> start() {
-       return Mono.fromRunnable(() -> { /* ... */ });
-   }
-   
-   // New:
-   public void start() throws PluginException {
-       // Just do the work
-   }
-   ```
-
-3. **No Spring Dependency**: Remove Spring-specific code from plugins
-
-4. **Extension Discovery**: Extensions are now inner classes with `@Extension` annotation
-
-5. **No Complex Loaders**: Only classpath loading (JAR/Git loading removed as over-engineering)
-
-### Migration Steps
-
-1. Update dependencies in `pom.xml`
-2. Replace reactive return types with plain types
-3. Simplify plugin implementation (remove reactive code)
-4. Move extensions to inner classes with `@Extension`
-5. Update extension point registration
-6. Test thoroughly
-
-## Best Practices
-
-1. **Keep plugins focused**: Each plugin should do one thing well
-2. **Use semantic versioning**: Follow semver for plugin versions
-3. **Document extension points**: Clear javadoc for all extension point interfaces
-4. **Handle errors gracefully**: Always clean up resources in `destroy()`
-5. **Test plugins independently**: Unit test plugins before integration
-6. **Use meaningful IDs**: Use reverse domain notation (e.g., `com.company.feature`)
-7. **Consider thread safety**: Plugins may be accessed concurrently
+Contributions are welcome. Please read the [CONTRIBUTING.md](CONTRIBUTING.md) guide for details on our code of conduct, development process, and how to submit pull requests.
 
 ## License
 
-Copyright 2024-2026 Firefly Software Solutions Inc  
-Licensed under the Apache License, Version 2.0
+Copyright 2024-2026 Firefly Software Solutions Inc.
+
+Licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE) for details.
