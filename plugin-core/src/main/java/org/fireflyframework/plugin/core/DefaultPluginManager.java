@@ -35,7 +35,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class DefaultPluginManager implements PluginManager {
     
-    private static final Logger logger = LoggerFactory.getLogger(DefaultPluginManager.class);
+    private static final Logger log = LoggerFactory.getLogger(DefaultPluginManager.class);
     
     private final Map<String, Plugin> plugins = new ConcurrentHashMap<>();
     private final Map<String, PluginDescriptor> descriptors = new ConcurrentHashMap<>();
@@ -57,11 +57,11 @@ public class DefaultPluginManager implements PluginManager {
     @Override
     public synchronized void initialize() throws PluginException {
         if (initialized) {
-            logger.warn("Plugin manager already initialized");
+            log.warn("Plugin manager already initialized");
             return;
         }
         
-        logger.info("Initializing plugin manager");
+        log.info("Initializing plugin manager");
         initialized = true;
     }
     
@@ -83,7 +83,7 @@ public class DefaultPluginManager implements PluginManager {
                 throw new PluginException("Plugin already loaded: " + pluginId);
             }
             
-            logger.info("Loading plugin: {} ({})", metadata.name(), pluginId);
+            log.info("Loading plugin: {} ({})", metadata.name(), pluginId);
             
             // Create descriptor
             PluginDescriptor descriptor = PluginDescriptor.builder()
@@ -100,7 +100,7 @@ public class DefaultPluginManager implements PluginManager {
                 plugin.initialize();
                 descriptor = descriptor.withState(PluginState.INITIALIZED);
                 descriptors.put(pluginId, descriptor);
-                logger.info("Plugin initialized: {}", pluginId);
+                log.info("Plugin initialized: {}", pluginId);
             } catch (Exception e) {
                 descriptor = descriptor.withState(PluginState.FAILED);
                 descriptors.put(pluginId, descriptor);
@@ -130,7 +130,7 @@ public class DefaultPluginManager implements PluginManager {
         
         PluginDescriptor descriptor = descriptors.get(pluginId);
         if (descriptor.state() == PluginState.STARTED) {
-            logger.warn("Plugin already started: {}", pluginId);
+            log.warn("Plugin already started: {}", pluginId);
             return;
         }
         
@@ -150,13 +150,13 @@ public class DefaultPluginManager implements PluginManager {
             throw new PluginException("Failed to resolve dependencies for plugin: " + pluginId, e);
         }
         
-        logger.info("Starting plugin: {}", pluginId);
+        log.info("Starting plugin: {}", pluginId);
         
         try {
             plugin.start();
             descriptor = descriptor.withState(PluginState.STARTED);
             descriptors.put(pluginId, descriptor);
-            logger.info("Plugin started: {}", pluginId);
+            log.info("Plugin started: {}", pluginId);
         } catch (Exception e) {
             descriptor = descriptor.withState(PluginState.FAILED);
             descriptors.put(pluginId, descriptor);
@@ -175,17 +175,17 @@ public class DefaultPluginManager implements PluginManager {
         
         PluginDescriptor descriptor = descriptors.get(pluginId);
         if (descriptor.state() != PluginState.STARTED) {
-            logger.warn("Plugin not started: {}", pluginId);
+            log.warn("Plugin not started: {}", pluginId);
             return;
         }
         
-        logger.info("Stopping plugin: {}", pluginId);
+        log.info("Stopping plugin: {}", pluginId);
         
         try {
             plugin.stop();
             descriptor = descriptor.withState(PluginState.STOPPED);
             descriptors.put(pluginId, descriptor);
-            logger.info("Plugin stopped: {}", pluginId);
+            log.info("Plugin stopped: {}", pluginId);
         } catch (Exception e) {
             descriptor = descriptor.withState(PluginState.FAILED);
             descriptors.put(pluginId, descriptor);
@@ -209,7 +209,7 @@ public class DefaultPluginManager implements PluginManager {
             stopPlugin(pluginId);
         }
         
-        logger.info("Unloading plugin: {}", pluginId);
+        log.info("Unloading plugin: {}", pluginId);
         
         try {
             // Unregister extensions
@@ -222,7 +222,7 @@ public class DefaultPluginManager implements PluginManager {
             plugins.remove(pluginId);
             descriptors.remove(pluginId);
             
-            logger.info("Plugin unloaded: {}", pluginId);
+            log.info("Plugin unloaded: {}", pluginId);
         } catch (Exception e) {
             throw new PluginException("Failed to unload plugin: " + pluginId, e);
         }
@@ -254,7 +254,7 @@ public class DefaultPluginManager implements PluginManager {
             return;
         }
         
-        logger.info("Shutting down plugin manager");
+        log.info("Shutting down plugin manager");
         
         // Stop and unload all plugins
         List<String> pluginIds = new ArrayList<>(plugins.keySet());
@@ -262,7 +262,7 @@ public class DefaultPluginManager implements PluginManager {
             try {
                 unloadPlugin(pluginId);
             } catch (Exception e) {
-                logger.error("Error unloading plugin during shutdown: {}", pluginId, e);
+                log.error("Error unloading plugin during shutdown: {}", pluginId, e);
             }
         }
         
@@ -285,10 +285,10 @@ public class DefaultPluginManager implements PluginManager {
                         extension, 
                         annotation.priority()
                     );
-                    logger.debug("Registered extension {} for plugin {}", 
+                    log.debug("Registered extension {} for plugin {}", 
                         innerClass.getSimpleName(), plugin.getMetadata().id());
                 } catch (Exception e) {
-                    logger.error("Failed to register extension: {}", innerClass.getName(), e);
+                    log.error("Failed to register extension: {}", innerClass.getName(), e);
                 }
             }
         }
@@ -308,10 +308,10 @@ public class DefaultPluginManager implements PluginManager {
                         annotation.extensionPointId(), 
                         extension
                     );
-                    logger.debug("Unregistered extension {} for plugin {}", 
+                    log.debug("Unregistered extension {} for plugin {}", 
                         innerClass.getSimpleName(), plugin.getMetadata().id());
                 } catch (Exception e) {
-                    logger.error("Failed to unregister extension: {}", innerClass.getName(), e);
+                    log.error("Failed to unregister extension: {}", innerClass.getName(), e);
                 }
             }
         }

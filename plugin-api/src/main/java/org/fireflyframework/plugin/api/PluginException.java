@@ -16,10 +16,12 @@
 
 package org.fireflyframework.plugin.api;
 
+import org.fireflyframework.kernel.exception.FireflyException;
+
 /**
  * Base exception for plugin-related errors.
  */
-public class PluginException extends Exception {
+public class PluginException extends FireflyException {
     
     public PluginException(String message) {
         super(message);
