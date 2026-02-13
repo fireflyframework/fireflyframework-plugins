@@ -30,7 +30,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class DefaultExtensionRegistry implements ExtensionRegistry {
     
-    private static final Logger logger = LoggerFactory.getLogger(DefaultExtensionRegistry.class);
+    private static final Logger log = LoggerFactory.getLogger(DefaultExtensionRegistry.class);
     
     private final Map<String, Class<?>> extensionPoints = new ConcurrentHashMap<>();
     private final Map<String, List<ExtensionEntry<?>>> extensions = new ConcurrentHashMap<>();
@@ -40,7 +40,7 @@ public class DefaultExtensionRegistry implements ExtensionRegistry {
         Objects.requireNonNull(extensionPointId, "Extension point ID cannot be null");
         Objects.requireNonNull(extensionPointClass, "Extension point class cannot be null");
         
-        logger.info("Registering extension point: {} -> {}", extensionPointId, extensionPointClass.getName());
+        log.info("Registering extension point: {} -> {}", extensionPointId, extensionPointClass.getName());
         extensionPoints.put(extensionPointId, extensionPointClass);
         extensions.putIfAbsent(extensionPointId, new CopyOnWriteArrayList<>());
     }
@@ -62,7 +62,7 @@ public class DefaultExtensionRegistry implements ExtensionRegistry {
             );
         }
         
-        logger.info("Registering extension {} for extension point {} with priority {}", 
+        log.info("Registering extension {} for extension point {} with priority {}", 
             extension.getClass().getSimpleName(), extensionPointId, priority);
         
         List<ExtensionEntry<?>> extensionList = extensions.computeIfAbsent(
@@ -82,7 +82,7 @@ public class DefaultExtensionRegistry implements ExtensionRegistry {
         Objects.requireNonNull(extensionPointId, "Extension point ID cannot be null");
         Objects.requireNonNull(extension, "Extension cannot be null");
         
-        logger.info("Unregistering extension {} from extension point {}", 
+        log.info("Unregistering extension {} from extension point {}", 
             extension.getClass().getSimpleName(), extensionPointId);
         
         List<ExtensionEntry<?>> extensionList = extensions.get(extensionPointId);
