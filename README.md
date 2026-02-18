@@ -54,14 +54,14 @@ The `DefaultPluginManager` handles plugin discovery, initialization, and shutdow
 <dependency>
     <groupId>org.fireflyframework</groupId>
     <artifactId>plugin-api</artifactId>
-    <version>26.02.04</version>
+    <version>26.02.05</version>
 </dependency>
 
 <!-- Plugin Core (for host applications) -->
 <dependency>
     <groupId>org.fireflyframework</groupId>
     <artifactId>plugin-core</artifactId>
-    <version>26.02.04</version>
+    <version>26.02.05</version>
 </dependency>
 ```
 
