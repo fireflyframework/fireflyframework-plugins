@@ -1,3 +1,6 @@
+# Maven build directories (including nested modules)
+**/target/
+
 # Compiled class file
 *.class
 

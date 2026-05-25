@@ -1,1 +1,0 @@
-typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html","k":"18"},{"p":"org.fireflyframework.plugin.core","l":"DefaultExtensionRegistry"},{"p":"org.fireflyframework.plugin.core","l":"DefaultPluginManager"},{"p":"org.fireflyframework.plugin.core","l":"PluginDependencyResolver"}];updateSearchResults();
